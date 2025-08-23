@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Failure in cyberdefense</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#1e293b;
+      --btn:#334155;
+      --btn-hover:#3b82f6;
+      --text:#fff;
+      --ok:#22c55e;
+      --no:#ef4444;
+      --info:#f59e0b;
+      --neutral:#93c5fd;
+      --radius:1rem;
+      --space:1rem;
+      --space-lg:1.25rem;
+    }
+
+    /* Base layout */
+    html,body{ height:100% }
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:var(--bg); color:var(--text);
+      display:grid; place-items:center;
+      min-height:100svh; margin:0;
+      padding: env(safe-area-inset-top,0) env(safe-area-inset-right,0)
+               env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
+    }
+
+    .card{
+      background:var(--card);
+      padding: clamp(1rem, 2.5vw, 2rem);
+      border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(0,0,0,.4);
+      width:min(92vw, 560px);
+    }
+
+    h1{
+      /* Scales with viewport but stays reasonable */
+      font-size: clamp(1.1rem, 2.5vw + 0.8rem, 1.6rem);
+      margin:0 0 .75rem;
+      line-height:1.25;
+    }
+
+    p.subtitle{
+      margin:.25rem 0 0;
+      opacity:.8;
+      font-size:clamp(.9rem, 1.2vw + .75rem, 1rem);
+    }
+
+    /* Grid: single column on phones, 2 columns on wider screens */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: .75rem;
+      margin-top: var(--space-lg);
+    }
+    @media (min-width: 560px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Big, finger-friendly buttons */
+    button.answer{
+      width:100%;
+      padding: clamp(.85rem, 2.2vw, 1rem);
+      min-height: 48px; /* WCAG target size */
+      border: none;
+      border-radius: .9rem;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: clamp(1rem, 1.4vw + .85rem, 1.05rem);
+      background: var(--btn);
+      color: var(--text);
+      transition: transform .06s ease, background .2s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    button.answer:hover{ background: var(--btn-hover); }
+    button.answer:active{ transform: scale(.98); }
+    button.answer:focus-visible{
+      outline: 3px solid #93c5fd;
+      outline-offset: 2px;
+    }
+
+    .feedback{
+      margin-top: var(--space);
+      font-weight: 600;
+      display: none;
+      font-size: clamp(1rem, 1.2vw + .85rem, 1.05rem);
+    }
+    .feedback.show{ display:block }
+    .ok{ color: var(--ok) }
+    .no{ color: var(--no) }
+    .info{ color: var(--info) }
+    .neutral{ color: var(--neutral) }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ transition: none !important; animation: none !important; }
+    }
+  </style>
+
+  <script>
+    // Disable right-click (desktop). Not relevant on most mobile browsers, but harmless.
+    document.addEventListener("contextmenu", function(e) {
+      e.preventDefault();
+    });
+
+    function showFeedback(el){
+      const feedback = document.getElementById("feedback");
+      const msg = el.dataset.feedback || "";
+      const tone = el.dataset.tone || "neutral"; // ok | no | info | neutral
+      feedback.textContent = msg;
+      feedback.className = `feedback show ${tone}`;
+      // Announce to screen readers
+      feedback.setAttribute("aria-live", "polite");
+    }
+  </script>
+</head>
+<body>
+  <div class="card">
+    <h1>Failure is inevitable in cyber defense.</h1>
+    <p class="subtitle">Try all options!.</p>
+
+    <div class="grid">
+      <!-- Each button defines its own message and tone -->
+      <button class="answer"
+              data-feedback="Agreed. Expecting failures helps design for resilience: detection, response, and recovery."
+              data-tone="ok"
+              onclick="showFeedback(this)">
+        Exactly
+      </button>
+
+      <button class="answer"
+              data-feedback="Disagreement noted. In high-maturity orgs, failures can be rare—yet never impossible. Plans still matter."
+              data-tone="no"
+              onclick="showFeedback(this)">
+        Not really
+      </button>
+
+      <button class="answer"
+              data-feedback="Mostly true. Even mature programs see breakdowns; aim to cut blast radius and speed recovery."
+              data-tone="neutral"
+              onclick="showFeedback(this)">
+        Mostly
+      </button>
+
+      <!-- Example extra option; duplicate as needed -->
+      <button class="answer"
+              data-feedback="It depends on threat model, budget, and tech stack—context shapes likelihood and impact."
+              data-tone="info"
+              onclick="showFeedback(this)">
+        It depends
+      </button>
+    </div>
+
+    <!-- aria-live added dynamically in JS when showing feedback -->
+    <div id="feedback" class="feedback" role="status"></div>
+  </div>
+</body>
+</html>
